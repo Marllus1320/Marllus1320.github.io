@@ -33,6 +33,8 @@
             min-height: 100vh;
             padding: 2rem;
             line-height: 1.6;
+            position: relative;
+            padding-bottom: 60px; /* Espaço para o rodapé fixo */
         }
         
         .container {
@@ -264,10 +266,30 @@
             margin-bottom: 1rem;
             color: var(--primary);
         }
+
+        /* MARCA D'ÁGUA NO RODAPÉ */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--darkest);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+
+        footer:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
         
         @media (max-width: 768px) {
             body {
                 padding: 1rem;
+                padding-bottom: 50px;
             }
             
             header h1 {
@@ -286,6 +308,11 @@
             
             .actions {
                 align-self: flex-end;
+            }
+
+            footer {
+                font-size: 0.8rem;
+                padding: 0.8rem;
             }
         }
     </style>
@@ -386,8 +413,16 @@
             </div>
         </div>
     </div>
+
+    <!-- MARCA D'ÁGUA FIXA NO RODAPÉ -->
+    <footer>
+        © <span id="year"></span> | Desenvolvido por Marllus Rayfe
+    </footer>
     
     <script>
+        // Atualiza o ano automaticamente
+        document.getElementById('year').textContent = new Date().getFullYear();
+        
         const ingredientes = [];
         
         document.getElementById('adicionar-btn').addEventListener('click', function() {
@@ -460,7 +495,6 @@
                 lista.appendChild(item);
             });
             
-            // Adicionar eventos aos botões de remover
             document.querySelectorAll('.btn-danger').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const index = parseInt(this.getAttribute('data-index'));
@@ -469,7 +503,6 @@
                 });
             });
             
-            // Mostrar botão de calcular se houver ingredientes
             if (ingredientes.length > 0) {
                 const calcularBtn = document.createElement('button');
                 calcularBtn.className = 'btn btn-primary';
@@ -514,8 +547,6 @@
             
             document.getElementById('custo-total').textContent = custoTotal.toFixed(2);
             document.getElementById('resultado').style.display = 'block';
-            
-            // Rolagem suave para o resultado
             document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
