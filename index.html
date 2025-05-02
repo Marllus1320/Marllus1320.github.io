@@ -4,164 +4,387 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Custos de Receitas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c0;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --darkest: #0f0f1a;
+            --light: #e2e2e2;
+            --lighter: #f1f1f1;
+            --accent: #00cec9;
+            --danger: #ff7675;
+            --success: #55efc4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 2rem;
             line-height: 1.6;
         }
-        h1 {
-            color: #2c3e50;
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--darker);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 2rem;
             text-align: center;
+            position: relative;
         }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .card {
+            background-color: var(--darkest);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-title i {
+            font-size: 1.3rem;
+        }
+        
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
         }
+        
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--lighter);
         }
+        
         input, select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            padding: 12px 15px;
+            background-color: var(--dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 1rem;
         }
-        button {
-            background-color: #3498db;
-            color: white;
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 12px 24px;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
+            transition: all 0.2s;
         }
-        button:hover {
-            background-color: #2980b9;
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
         }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e84393;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: var(--darkest);
+        }
+        
+        .btn-success:hover {
+            background-color: #00b894;
+        }
+        
         #ingredientes-list {
-            margin: 20px 0;
+            margin: 2rem 0;
         }
+        
         .ingrediente-item {
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
+            background-color: var(--dark);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-left: 4px solid var(--primary);
         }
-        .remove-btn {
-            background-color: #e74c3c;
+        
+        .ingrediente-info {
+            flex: 1;
         }
-        .remove-btn:hover {
-            background-color: #c0392b;
+        
+        .ingrediente-nome {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--lighter);
         }
+        
+        .ingrediente-detalhes {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .ingrediente-custo {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         #resultado {
-            margin-top: 30px;
+            margin-top: 2rem;
             display: none;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin: 1.5rem 0;
+            background-color: var(--dark);
+            border-radius: 8px;
+            overflow: hidden;
         }
+        
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px 15px;
             text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+        
         th {
-            background-color: #f2f2f2;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
         }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
         .total-row {
             font-weight: bold;
-            background-color: #f2f2f2;
+            background-color: var(--darkest);
+            color: var(--accent);
+            font-size: 1.2rem;
         }
-        .print-btn {
-            background-color: #27ae60;
-            margin-top: 20px;
-        }
-        .print-btn:hover {
-            background-color: #219653;
-        }
+        
         .unidade-info {
-            font-size: 0.9em;
-            color: #666;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 0.3rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .ingrediente-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .actions {
+                align-self: flex-end;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Calculadora de Custos de Receitas</h1>
-    
-    <div class="form-group">
-        <label for="nome-receita">Nome da Receita:</label>
-        <input type="text" id="nome-receita" placeholder="Ex: Bolo de Chocolate">
-    </div>
-    
-    <h2>Adicionar Ingrediente</h2>
-    
-    <div class="form-group">
-        <label for="nome-ingrediente">Nome do Ingrediente:</label>
-        <input type="text" id="nome-ingrediente" placeholder="Ex: Farinha de Trigo">
-    </div>
-    
-    <div class="form-group">
-        <label for="preco-ingrediente">Preço total do pacote (R$):</label>
-        <input type="number" id="preco-ingrediente" step="0.01" min="0" placeholder="Ex: 5.99">
-    </div>
-    
-    <div class="form-group">
-        <label for="quantidade-total">Quantidade total do pacote:</label>
-        <input type="number" id="quantidade-total" step="1" min="1" placeholder="Ex: 1000" value="1000">
-        <span class="unidade-info">(em gramas ou ml)</span>
-    </div>
-    
-    <div class="form-group">
-        <label for="quantidade-ingrediente">Quantidade Usada na Receita:</label>
-        <input type="number" id="quantidade-ingrediente" step="1" min="0" placeholder="Ex: 300">
-        <span class="unidade-info">(em gramas ou ml)</span>
-    </div>
-    
-    <div class="form-group">
-        <label for="unidade-ingrediente">Tipo de Medida:</label>
-        <select id="unidade-ingrediente">
-            <option value="g">gramas (g)</option>
-            <option value="ml">mililitros (ml)</option>
-            <option value="un">unidades</option>
-        </select>
-    </div>
-    
-    <button id="adicionar-btn">Adicionar Ingrediente</button>
-    
-    <div id="ingredientes-list"></div>
-    
-    <div id="resultado">
-        <h2>Resumo da Receita: <span id="nome-receita-resultado"></span></h2>
-        <table id="tabela-resultado">
-            <thead>
-                <tr>
-                    <th>Ingrediente</th>
-                    <th>Preço Pacote</th>
-                    <th>Total no Pacote</th>
-                    <th>Quantidade Usada</th>
-                    <th>Custo</th>
-                </tr>
-            </thead>
-            <tbody id="tabela-corpo">
-                <!-- Itens serão adicionados aqui -->
-            </tbody>
-        </table>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator"></i> Calculadora de Receitas</h1>
+            <p>Calcule os custos exatos de suas receitas</p>
+        </header>
         
-        <div class="total-row" style="padding: 10px; margin-top: 10px;">
-            Custo Total da Receita: R$ <span id="custo-total">0.00</span>
+        <div class="content">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-utensils"></i> Informações da Receita</h2>
+                <div class="form-group">
+                    <label for="nome-receita">Nome da Receita:</label>
+                    <input type="text" id="nome-receita" placeholder="Ex: Bolo de Chocolate">
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-plus-circle"></i> Adicionar Ingrediente</h2>
+                
+                <div class="form-group">
+                    <label for="nome-ingrediente">Nome do Ingrediente:</label>
+                    <input type="text" id="nome-ingrediente" placeholder="Ex: Farinha de Trigo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="preco-ingrediente">Preço total do pacote (R$):</label>
+                    <input type="number" id="preco-ingrediente" step="0.01" min="0" placeholder="Ex: 5.99">
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantidade-total">Quantidade total do pacote:</label>
+                    <input type="number" id="quantidade-total" step="1" min="1" placeholder="Ex: 1000" value="1000">
+                    <span class="unidade-info">(em gramas ou ml)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantidade-ingrediente">Quantidade Usada na Receita:</label>
+                    <input type="number" id="quantidade-ingrediente" step="1" min="0" placeholder="Ex: 300">
+                    <span class="unidade-info">(em gramas ou ml)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="unidade-ingrediente">Tipo de Medida:</label>
+                    <select id="unidade-ingrediente">
+                        <option value="g">gramas (g)</option>
+                        <option value="ml">mililitros (ml)</option>
+                        <option value="un">unidades</option>
+                    </select>
+                </div>
+                
+                <button id="adicionar-btn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Adicionar Ingrediente
+                </button>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-list"></i> Ingredientes Adicionados</h2>
+                
+                <div id="ingredientes-list">
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <p>Nenhum ingrediente adicionado ainda</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="resultado">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-receipt"></i> Resumo da Receita: <span id="nome-receita-resultado"></span></h2>
+                    
+                    <table id="tabela-resultado">
+                        <thead>
+                            <tr>
+                                <th>Ingrediente</th>
+                                <th>Preço Pacote</th>
+                                <th>Total no Pacote</th>
+                                <th>Quantidade Usada</th>
+                                <th>Custo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-corpo">
+                            <!-- Itens serão adicionados aqui -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="total-row">
+                        Custo Total da Receita: R$ <span id="custo-total">0.00</span>
+                    </div>
+                    
+                    <button class="btn btn-success print-btn" onclick="window.print()">
+                        <i class="fas fa-print"></i> Imprimir Tabela
+                    </button>
+                </div>
+            </div>
         </div>
-        
-        <button class="print-btn" onclick="window.print()">Imprimir Tabela</button>
     </div>
     
     <script>
@@ -202,6 +425,17 @@
         
         function atualizarListaIngredientes() {
             const lista = document.getElementById('ingredientes-list');
+            
+            if (ingredientes.length === 0) {
+                lista.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <p>Nenhum ingrediente adicionado ainda</p>
+                    </div>
+                `;
+                return;
+            }
+            
             lista.innerHTML = '';
             
             ingredientes.forEach((ingrediente, index) => {
@@ -209,18 +443,25 @@
                 item.className = 'ingrediente-item';
                 
                 item.innerHTML = `
-                    <div>
-                        <strong>${ingrediente.nome}</strong><br>
-                        ${ingrediente.quantidadeUsada}${ingrediente.unidade} usados de ${ingrediente.quantidadeTotal}${ingrediente.unidade} - R$ ${ingrediente.custo.toFixed(2)}
+                    <div class="ingrediente-info">
+                        <div class="ingrediente-nome">${ingrediente.nome}</div>
+                        <div class="ingrediente-detalhes">
+                            ${ingrediente.quantidadeUsada}${ingrediente.unidade} usados de ${ingrediente.quantidadeTotal}${ingrediente.unidade}
+                        </div>
                     </div>
-                    <button class="remove-btn" data-index="${index}">Remover</button>
+                    <div class="ingrediente-custo">R$ ${ingrediente.custo.toFixed(2)}</div>
+                    <div class="actions">
+                        <button class="btn btn-danger btn-icon" data-index="${index}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 `;
                 
                 lista.appendChild(item);
             });
             
             // Adicionar eventos aos botões de remover
-            document.querySelectorAll('.remove-btn').forEach(btn => {
+            document.querySelectorAll('.btn-danger').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const index = parseInt(this.getAttribute('data-index'));
                     ingredientes.splice(index, 1);
@@ -231,7 +472,8 @@
             // Mostrar botão de calcular se houver ingredientes
             if (ingredientes.length > 0) {
                 const calcularBtn = document.createElement('button');
-                calcularBtn.textContent = 'Calcular Custo Total';
+                calcularBtn.className = 'btn btn-primary';
+                calcularBtn.innerHTML = '<i class="fas fa-calculator"></i> Calcular Custo Total';
                 calcularBtn.style.marginTop = '20px';
                 calcularBtn.onclick = calcularCustoTotal;
                 lista.appendChild(calcularBtn);
