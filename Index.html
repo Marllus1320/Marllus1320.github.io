@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Custos de Receitas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #ingredientes-list {
+            margin: 20px 0;
+        }
+        .ingrediente-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .remove-btn {
+            background-color: #e74c3c;
+        }
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+        #resultado {
+            margin-top: 30px;
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+        .print-btn {
+            background-color: #27ae60;
+            margin-top: 20px;
+        }
+        .print-btn:hover {
+            background-color: #219653;
+        }
+        .unidade-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Custos de Receitas</h1>
+    
+    <div class="form-group">
+        <label for="nome-receita">Nome da Receita:</label>
+        <input type="text" id="nome-receita" placeholder="Ex: Bolo de Chocolate">
+    </div>
+    
+    <h2>Adicionar Ingrediente</h2>
+    
+    <div class="form-group">
+        <label for="nome-ingrediente">Nome do Ingrediente:</label>
+        <input type="text" id="nome-ingrediente" placeholder="Ex: Farinha de Trigo">
+    </div>
+    
+    <div class="form-group">
+        <label for="preco-ingrediente">Preço total do pacote (R$):</label>
+        <input type="number" id="preco-ingrediente" step="0.01" min="0" placeholder="Ex: 5.99">
+    </div>
+    
+    <div class="form-group">
+        <label for="quantidade-total">Quantidade total do pacote:</label>
+        <input type="number" id="quantidade-total" step="1" min="1" placeholder="Ex: 1000" value="1000">
+        <span class="unidade-info">(em gramas ou ml)</span>
+    </div>
+    
+    <div class="form-group">
+        <label for="quantidade-ingrediente">Quantidade Usada na Receita:</label>
+        <input type="number" id="quantidade-ingrediente" step="1" min="0" placeholder="Ex: 300">
+        <span class="unidade-info">(em gramas ou ml)</span>
+    </div>
+    
+    <div class="form-group">
+        <label for="unidade-ingrediente">Tipo de Medida:</label>
+        <select id="unidade-ingrediente">
+            <option value="g">gramas (g)</option>
+            <option value="ml">mililitros (ml)</option>
+            <option value="un">unidades</option>
+        </select>
+    </div>
+    
+    <button id="adicionar-btn">Adicionar Ingrediente</button>
+    
+    <div id="ingredientes-list"></div>
+    
+    <div id="resultado">
+        <h2>Resumo da Receita: <span id="nome-receita-resultado"></span></h2>
+        <table id="tabela-resultado">
+            <thead>
+                <tr>
+                    <th>Ingrediente</th>
+                    <th>Preço Pacote</th>
+                    <th>Total no Pacote</th>
+                    <th>Quantidade Usada</th>
+                    <th>Custo</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-corpo">
+                <!-- Itens serão adicionados aqui -->
+            </tbody>
+        </table>
+        
+        <div class="total-row" style="padding: 10px; margin-top: 10px;">
+            Custo Total da Receita: R$ <span id="custo-total">0.00</span>
+        </div>
+        
+        <button class="print-btn" onclick="window.print()">Imprimir Tabela</button>
+    </div>
+    
+    <script>
+        const ingredientes = [];
+        
+        document.getElementById('adicionar-btn').addEventListener('click', function() {
+            const nome = document.getElementById('nome-ingrediente').value;
+            const preco = parseFloat(document.getElementById('preco-ingrediente').value);
+            const quantidadeTotal = parseFloat(document.getElementById('quantidade-total').value);
+            const quantidadeUsada = parseFloat(document.getElementById('quantidade-ingrediente').value);
+            const unidade = document.getElementById('unidade-ingrediente').value;
+            
+            if (!nome || isNaN(preco) || isNaN(quantidadeTotal) || isNaN(quantidadeUsada)) {
+                alert('Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+            
+            if (quantidadeUsada > quantidadeTotal) {
+                alert('A quantidade usada não pode ser maior que a quantidade total do pacote!');
+                return;
+            }
+            
+            const custo = (preco / quantidadeTotal) * quantidadeUsada;
+            
+            const ingrediente = {
+                nome,
+                preco,
+                quantidadeTotal,
+                quantidadeUsada,
+                unidade,
+                custo
+            };
+            
+            ingredientes.push(ingrediente);
+            atualizarListaIngredientes();
+            limparCampos();
+        });
+        
+        function atualizarListaIngredientes() {
+            const lista = document.getElementById('ingredientes-list');
+            lista.innerHTML = '';
+            
+            ingredientes.forEach((ingrediente, index) => {
+                const item = document.createElement('div');
+                item.className = 'ingrediente-item';
+                
+                item.innerHTML = `
+                    <div>
+                        <strong>${ingrediente.nome}</strong><br>
+                        ${ingrediente.quantidadeUsada}${ingrediente.unidade} usados de ${ingrediente.quantidadeTotal}${ingrediente.unidade} - R$ ${ingrediente.custo.toFixed(2)}
+                    </div>
+                    <button class="remove-btn" data-index="${index}">Remover</button>
+                `;
+                
+                lista.appendChild(item);
+            });
+            
+            // Adicionar eventos aos botões de remover
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    ingredientes.splice(index, 1);
+                    atualizarListaIngredientes();
+                });
+            });
+            
+            // Mostrar botão de calcular se houver ingredientes
+            if (ingredientes.length > 0) {
+                const calcularBtn = document.createElement('button');
+                calcularBtn.textContent = 'Calcular Custo Total';
+                calcularBtn.style.marginTop = '20px';
+                calcularBtn.onclick = calcularCustoTotal;
+                lista.appendChild(calcularBtn);
+            }
+        }
+        
+        function limparCampos() {
+            document.getElementById('nome-ingrediente').value = '';
+            document.getElementById('preco-ingrediente').value = '';
+            document.getElementById('quantidade-ingrediente').value = '';
+            document.getElementById('quantidade-total').value = '1000';
+            document.getElementById('unidade-ingrediente').value = 'g';
+        }
+        
+        function calcularCustoTotal() {
+            const nomeReceita = document.getElementById('nome-receita').value || 'Minha Receita';
+            document.getElementById('nome-receita-resultado').textContent = nomeReceita;
+            
+            const tabelaCorpo = document.getElementById('tabela-corpo');
+            tabelaCorpo.innerHTML = '';
+            
+            let custoTotal = 0;
+            
+            ingredientes.forEach(ingrediente => {
+                custoTotal += ingrediente.custo;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${ingrediente.nome}</td>
+                    <td>R$ ${ingrediente.preco.toFixed(2)}</td>
+                    <td>${ingrediente.quantidadeTotal}${ingrediente.unidade}</td>
+                    <td>${ingrediente.quantidadeUsada}${ingrediente.unidade}</td>
+                    <td>R$ ${ingrediente.custo.toFixed(2)}</td>
+                `;
+                
+                tabelaCorpo.appendChild(row);
+            });
+            
+            document.getElementById('custo-total').textContent = custoTotal.toFixed(2);
+            document.getElementById('resultado').style.display = 'block';
+            
+            // Rolagem suave para o resultado
+            document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
